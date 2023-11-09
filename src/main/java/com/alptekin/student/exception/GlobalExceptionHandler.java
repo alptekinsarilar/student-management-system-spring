@@ -11,4 +11,9 @@ public class GlobalExceptionHandler {
     protected ResponseEntity<Object> handleStudentNotFoundException(StudentNotFoundException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
+
+    @ExceptionHandler(StudentAlreadyExistsException.class)
+    protected ResponseEntity<Object> handleStudentAlreadyExistsException(StudentAlreadyExistsException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT);
+    }
 }
