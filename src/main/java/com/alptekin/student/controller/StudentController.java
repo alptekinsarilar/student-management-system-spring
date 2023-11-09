@@ -5,6 +5,8 @@ import com.alptekin.student.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/students")
 public class StudentController {
@@ -25,8 +27,8 @@ public class StudentController {
         return studentService.getStudentByEmail(email);
     }
 
-    @GetMapping("/fullname")
-    public Student getStudentByFullName(@RequestParam String firstName, @RequestParam String lastName) {
-        return studentService.getStudentByFullName(firstName, lastName);
+    @GetMapping("/search")
+    public List<Student> getStudentsByFullName(@RequestParam String firstName, @RequestParam String lastName) {
+        return studentService.getStudentsByFullName(firstName, lastName);
     }
 }
