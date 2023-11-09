@@ -9,4 +9,9 @@ public interface StudentService {
     List<Student> getStudentsByFullName(String firstName, String lastName);
     Student getStudentByEmail(String email);
 
+    // Additional methods for full CRUD operations
+    Student createStudent(Student student); // Create a new student
+    List<Student> getAllStudents(); // Retrieve all students
+    Student updateStudent(Student student); // Update an existing student
+    void deleteStudent(Long id); // Delete a student by their id
 }
