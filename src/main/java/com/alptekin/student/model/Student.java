@@ -28,8 +28,7 @@ public class Student {
     @Nonnull
     private String password;
 
-    public Student(Long id, String firstName, String lastName, String email, String password) {
-        this.id = id;
+    public Student(String firstName, String lastName, String email, String password) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
