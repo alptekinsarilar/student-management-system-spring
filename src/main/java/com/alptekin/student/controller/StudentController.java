@@ -47,9 +47,9 @@ public class StudentController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Student> updateStudent(@PathVariable Long id, @RequestBody Student student) {
-        Student existingStudent = studentService.getStudentById(id);
-        Student updatedStudent = studentService.updateStudent(existingStudent);
+    public ResponseEntity<Student> updateStudent(@PathVariable Long id,
+                                                 @RequestParam(required = false) String email) {
+        Student updatedStudent = studentService.updateStudent(id, email);
         return new ResponseEntity<>(updatedStudent, HttpStatus.OK);
     }
 

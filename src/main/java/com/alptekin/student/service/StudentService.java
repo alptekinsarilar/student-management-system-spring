@@ -12,6 +12,6 @@ public interface StudentService {
     // Additional methods for full CRUD operations
     Student createStudent(Student student); // Create a new student
     List<Student> getAllStudents(); // Retrieve all students
-    Student updateStudent(Student student); // Update an existing student
+    Student updateStudent(Long id, String email); // Update an existing student
     void deleteStudent(Long id); // Delete a student by their id
 }

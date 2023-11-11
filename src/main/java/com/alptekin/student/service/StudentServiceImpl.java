@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 @Service
 public class StudentServiceImpl implements StudentService{
@@ -61,11 +63,21 @@ public class StudentServiceImpl implements StudentService{
     }
 
     @Override
-    public Student updateStudent(Student student) {
-        if (student == null || !studentRepository.existsById(student.getId())) {
-            throw new StudentAlreadyExistsException("Unable to find student to update with id: " + student.getId());
+    public Student updateStudent(Long id, String email) {
+        Student existingStudent = studentRepository.findById(id)
+                .orElseThrow(() -> new StudentNotFoundException("Unable to find student to update with id: " + id));
+
+        if(email != null &&
+            !email.isEmpty() &&
+                !Objects.equals(existingStudent.getEmail(), email)) {
+           Optional<Student> studentOptional = studentRepository.
+                   findByEmail(email);
+           if (studentOptional.isPresent()) {
+               throw new IllegalStateException("Email is taken");
+           }
+           existingStudent.setEmail(email);
         }
-        return studentRepository.save(student);
+        return studentRepository.save(existingStudent);
     }
 
     @Override
