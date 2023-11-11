@@ -45,7 +45,7 @@ public class StudentServiceImpl implements StudentService{
         if (student == null) {
             throw new StudentNotFoundException("Unable to create student with provided details");
         }
-        else if(studentRepository.existsById(student.getId())) {
+        else if(studentRepository.existsStudentByEmail(student.getEmail())) {
             throw new StudentAlreadyExistsException("Student already exists with provided details");
         }
         return studentRepository.save(student);
