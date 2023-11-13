@@ -1,4 +1,4 @@
-package com.alptekin.student;
+package com.alptekin.student.repository;
 
 import com.alptekin.student.model.Student;
 import com.alptekin.student.repository.StudentRepository;
