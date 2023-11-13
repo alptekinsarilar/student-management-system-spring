@@ -1,5 +1,9 @@
 package com.alptekin.student.service;
 
+import com.alptekin.student.dto.StudentDTO;
+import com.alptekin.student.dto.StudentDTOMapper;
+import com.alptekin.student.dto.StudentIdDTO;
+import com.alptekin.student.dto.StudentRegistrationRequest;
 import com.alptekin.student.exception.StudentAlreadyExistsException;
 import com.alptekin.student.exception.StudentNotFoundException;
 import com.alptekin.student.model.Student;
@@ -10,52 +14,68 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class StudentServiceImpl implements StudentService{
     private final StudentRepository studentRepository;
+    private final StudentDTOMapper studentDTOMapper;
 
     @Autowired
-    public StudentServiceImpl(StudentRepository studentRepository) {
+    public StudentServiceImpl(StudentRepository studentRepository, StudentDTOMapper studentDTOMapper) {
         this.studentRepository = studentRepository;
+        this.studentDTOMapper = studentDTOMapper;
     }
 
     @Override
-    public Student getStudentById(Long id) {
+    public StudentDTO getStudentById(Long id) {
         return studentRepository.findById(id)
+                .map(studentDTOMapper::toStudentDTO)
                 .orElseThrow(() -> new StudentNotFoundException("Student not found with id: " + id));
     }
 
     @Override
-    public List<Student> getStudentsByFullName(String firstName, String lastName) {
+    public List<StudentDTO> getStudentsByFullName(String firstName, String lastName) {
         List<Student> students = studentRepository.findByFirstNameAndLastName(firstName, lastName);
         if (students.isEmpty()) {
             throw new StudentNotFoundException("No students found with name: " + firstName + " " + lastName);
         }
-        return students;
+        return students
+                .stream()
+                .map(studentDTOMapper::toStudentDTO)
+                .collect(Collectors.toList());
     }
 
 
     @Override
-    public Student getStudentByEmail(String email) {
+    public StudentDTO getStudentByEmail(String email) {
         return studentRepository.findByEmail(email)
+                .map(studentDTOMapper::toStudentDTO)
                 .orElseThrow(() -> new StudentNotFoundException("Student not found with email: " + email));
     }
 
     @Override
-    public Student createStudent(Student student) {
-        if (student == null) {
+    public StudentIdDTO createStudent(StudentRegistrationRequest request) {
+        if (request == null) {
             throw new StudentNotFoundException("Unable to create student with provided details");
         }
-        else if(studentRepository.existsStudentByEmail(student.getEmail())) {
+        else if(studentRepository.existsStudentByEmail(request.email())) {
             throw new StudentAlreadyExistsException("Student already exists with provided details");
         }
-        return studentRepository.save(student);
+
+        Student student = studentDTOMapper.toStudent(request);
+
+        Student created = studentRepository.save(student);
+
+        return new StudentIdDTO(created.getId());
     }
 
     @Override
-    public List<Student> getAllStudents() {
-        List<Student> students = studentRepository.findAll();
+    public List<StudentDTO> getAllStudents() {
+        List<StudentDTO> students = studentRepository.findAll()
+                .stream()
+                .map(studentDTOMapper::toStudentDTO)
+                .collect(Collectors.toList());
         if (students.isEmpty()) {
             throw new StudentNotFoundException("No students found");
         }
@@ -63,7 +83,7 @@ public class StudentServiceImpl implements StudentService{
     }
 
     @Override
-    public Student updateStudent(Long id, String email) {
+    public StudentDTO updateStudent(Long id, String email) {
         Student existingStudent = studentRepository.findById(id)
                 .orElseThrow(() -> new StudentNotFoundException("Unable to find student to update with id: " + id));
 
@@ -77,7 +97,8 @@ public class StudentServiceImpl implements StudentService{
            }
            existingStudent.setEmail(email);
         }
-        return studentRepository.save(existingStudent);
+        return studentDTOMapper
+                .toStudentDTO(studentRepository.save(existingStudent));
     }
 
     @Override

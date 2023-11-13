@@ -1,6 +1,6 @@
 package com.alptekin.student.model;
 
-import jakarta.annotation.Nonnull;
+import jakarta.validation.constraints.NotNull;
 import jakarta.persistence.*;
 
 @Entity
@@ -19,13 +19,13 @@ public class Student {
             updatable = false
     )
     private Long id;
-    @Nonnull
+    @NotNull
     private String firstName;
-    @Nonnull
+    @NotNull
     private String lastName;
-    @Nonnull
+    @NotNull
     private String email;
-    @Nonnull
+    @NotNull
     private String password;
 
     public Student(String firstName, String lastName, String email, String password) {
