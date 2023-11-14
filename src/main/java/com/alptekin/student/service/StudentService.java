@@ -1,17 +1,19 @@
 package com.alptekin.student.service;
 
-import com.alptekin.student.model.Student;
+import com.alptekin.student.dto.StudentDTO;
+import com.alptekin.student.dto.StudentIdDTO;
+import com.alptekin.student.dto.StudentRegistrationRequest;
 
 import java.util.List;
 
 public interface StudentService {
-    Student getStudentById(Long id);
-    List<Student> getStudentsByFullName(String firstName, String lastName);
-    Student getStudentByEmail(String email);
+    StudentDTO getStudentById(Long id);
+    List<StudentDTO> getStudentsByFullName(String firstName, String lastName);
+    StudentDTO getStudentByEmail(String email);
 
     // Additional methods for full CRUD operations
-    Student createStudent(Student student); // Create a new student
-    List<Student> getAllStudents(); // Retrieve all students
-    Student updateStudent(Long id, String email); // Update an existing student
+    StudentIdDTO createStudent(StudentRegistrationRequest request); // Create a new student
+    List<StudentDTO> getAllStudents(); // Retrieve all students
+    StudentDTO updateStudent(Long id, String email); // Update an existing student
     void deleteStudent(Long id); // Delete a student by their id
 }

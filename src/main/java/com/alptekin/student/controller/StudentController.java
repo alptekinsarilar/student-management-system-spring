@@ -1,7 +1,11 @@
 package com.alptekin.student.controller;
 
+import com.alptekin.student.dto.StudentDTO;
+import com.alptekin.student.dto.StudentIdDTO;
+import com.alptekin.student.dto.StudentRegistrationRequest;
 import com.alptekin.student.model.Student;
 import com.alptekin.student.service.StudentService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,36 +24,37 @@ public class StudentController {
     }
 
     @GetMapping("/{id}")
-    public Student getStudentById(@PathVariable Long id) {
+    public StudentDTO getStudentById(@PathVariable Long id) {
         return studentService.getStudentById(id);
     }
 
     @GetMapping("/email/{email}")
-    public Student getStudentByEmail(@PathVariable String email) {
+    public StudentDTO getStudentByEmail(@PathVariable String email) {
         return studentService.getStudentByEmail(email);
     }
 
     @GetMapping("/search")
-    public List<Student> getStudentsByFullName(@RequestParam String firstName, @RequestParam String lastName) {
+    public List<StudentDTO> getStudentsByFullName(@RequestParam String firstName, @RequestParam String lastName) {
         return studentService.getStudentsByFullName(firstName, lastName);
     }
 
     @PostMapping
-    public ResponseEntity<?> createStudent(@RequestBody Student student) {
-        Student createdStudent = studentService.createStudent(student);
+    public ResponseEntity<?> createStudent(
+            @Valid @RequestBody StudentRegistrationRequest request) {
+        StudentIdDTO createdStudent = studentService.createStudent(request);
         return new ResponseEntity<>(createdStudent, HttpStatus.CREATED);
     }
 
     @GetMapping
-    public ResponseEntity<List<Student>> getAllStudents() {
-        List<Student> students = studentService.getAllStudents();
+    public ResponseEntity<List<StudentDTO>> getAllStudents() {
+        List<StudentDTO> students = studentService.getAllStudents();
         return new ResponseEntity<>(students, HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Student> updateStudent(@PathVariable Long id,
+    public ResponseEntity<StudentDTO> updateStudent(@PathVariable Long id,
                                                  @RequestParam(required = false) String email) {
-        Student updatedStudent = studentService.updateStudent(id, email);
+        StudentDTO updatedStudent = studentService.updateStudent(id, email);
         return new ResponseEntity<>(updatedStudent, HttpStatus.OK);
     }
 
