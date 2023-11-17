@@ -9,6 +9,7 @@ import com.alptekin.student.exception.StudentNotFoundException;
 import com.alptekin.student.model.Student;
 import com.alptekin.student.repository.StudentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,11 +21,16 @@ import java.util.stream.Collectors;
 public class StudentServiceImpl implements StudentService{
     private final StudentRepository studentRepository;
     private final StudentDTOMapper studentDTOMapper;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public StudentServiceImpl(StudentRepository studentRepository, StudentDTOMapper studentDTOMapper) {
+    public StudentServiceImpl(
+            StudentRepository studentRepository,
+            StudentDTOMapper studentDTOMapper,
+            PasswordEncoder passwordEncoder) {
         this.studentRepository = studentRepository;
         this.studentDTOMapper = studentDTOMapper;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -62,8 +68,10 @@ public class StudentServiceImpl implements StudentService{
         else if(studentRepository.existsStudentByEmail(request.email())) {
             throw new StudentAlreadyExistsException("Student already exists with provided details");
         }
-
         Student student = studentDTOMapper.toStudent(request);
+        student.setPassword(
+                passwordEncoder.encode(student.getPassword())
+        );
 
         Student created = studentRepository.save(student);
 
