@@ -1,14 +1,14 @@
 package com.alptekin.student.service;
 
-import com.alptekin.student.dto.StudentDTO;
-import com.alptekin.student.dto.StudentDTOMapper;
-import com.alptekin.student.dto.StudentIdDTO;
-import com.alptekin.student.dto.StudentRegistrationRequest;
+import com.alptekin.student.dto.*;
 import com.alptekin.student.exception.StudentAlreadyExistsException;
 import com.alptekin.student.exception.StudentNotFoundException;
 import com.alptekin.student.model.Student;
 import com.alptekin.student.repository.StudentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -79,15 +79,32 @@ public class StudentServiceImpl implements StudentService{
     }
 
     @Override
-    public List<StudentDTO> getAllStudents() {
-        List<StudentDTO> students = studentRepository.findAll()
+    public StudentResponse getAllStudents(int pageNo, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNo, pageSize);
+        Page<Student> students = studentRepository.findAll(pageable);
+        List<Student> listOfStudents = students.getContent();
+
+        /*
+         Throwing an exception when no students are found may not be the best approach.
+         It's not really an exceptional circumstance for a query to return no results.
+         Especially with pagination where you might request a page beyond the end of the result set.
+         */
+
+        List<StudentDTO> content = listOfStudents
                 .stream()
                 .map(studentDTOMapper::toStudentDTO)
                 .collect(Collectors.toList());
-        if (students.isEmpty()) {
-            throw new StudentNotFoundException("No students found");
-        }
-        return students;
+
+        StudentResponse response = new StudentResponse(
+                content,
+                pageNo,
+                pageSize,
+                students.getTotalElements(),
+                students.getTotalPages(),
+                students.isLast()
+        );
+
+        return response;
     }
 
     @Override

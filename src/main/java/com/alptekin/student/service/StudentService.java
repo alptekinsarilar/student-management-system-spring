@@ -3,6 +3,7 @@ package com.alptekin.student.service;
 import com.alptekin.student.dto.StudentDTO;
 import com.alptekin.student.dto.StudentIdDTO;
 import com.alptekin.student.dto.StudentRegistrationRequest;
+import com.alptekin.student.dto.StudentResponse;
 
 import java.util.List;
 
@@ -13,7 +14,7 @@ public interface StudentService {
 
     // Additional methods for full CRUD operations
     StudentIdDTO createStudent(StudentRegistrationRequest request); // Create a new student
-    List<StudentDTO> getAllStudents(); // Retrieve all students
+    StudentResponse getAllStudents(int pageNo, int pageSize); // Retrieve all students
     StudentDTO updateStudent(Long id, String email); // Update an existing student
     void deleteStudent(Long id); // Delete a student by their id
 }

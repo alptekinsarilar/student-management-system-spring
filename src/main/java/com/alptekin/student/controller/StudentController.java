@@ -3,7 +3,7 @@ package com.alptekin.student.controller;
 import com.alptekin.student.dto.StudentDTO;
 import com.alptekin.student.dto.StudentIdDTO;
 import com.alptekin.student.dto.StudentRegistrationRequest;
-import com.alptekin.student.model.Student;
+import com.alptekin.student.dto.StudentResponse;
 import com.alptekin.student.service.StudentService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,17 +38,20 @@ public class StudentController {
         return studentService.getStudentsByFullName(firstName, lastName);
     }
 
+    @GetMapping
+    public ResponseEntity<StudentResponse> getAllStudents(
+            @RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo,
+            @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize
+    ) {
+        StudentResponse studentResponse = studentService.getAllStudents(pageNo, pageSize);
+        return new ResponseEntity<>(studentResponse, HttpStatus.OK);
+    }
+
     @PostMapping
     public ResponseEntity<?> createStudent(
             @Valid @RequestBody StudentRegistrationRequest request) {
         StudentIdDTO createdStudent = studentService.createStudent(request);
         return new ResponseEntity<>(createdStudent, HttpStatus.CREATED);
-    }
-
-    @GetMapping
-    public ResponseEntity<List<StudentDTO>> getAllStudents() {
-        List<StudentDTO> students = studentService.getAllStudents();
-        return new ResponseEntity<>(students, HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
