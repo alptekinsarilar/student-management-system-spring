@@ -1,6 +1,7 @@
 package com.alptekin.student.service;
 
 import com.alptekin.student.dto.*;
+import com.alptekin.student.exception.StudentNotFoundException;
 import com.alptekin.student.model.Student;
 import com.alptekin.student.repository.StudentRepository;
 import org.assertj.core.api.Assertions;
@@ -19,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.times;
@@ -170,24 +172,47 @@ public class StudentServiceUnitTests {
         verify(studentRepository).save(Mockito.any(Student.class));
     }
 
-/*    @Test
-    public void StudentService_UpdateStudentWithSameMail_ThrowException() {
+    @Test
+    public void StudentService_UpdateStudent_ThrowStudentNotFoundException() {
+        // Given
+        Long id = 1L;
+        String newEmail = "newmail@mail.com";
+
+        when(studentRepository.findById(id))
+                .thenThrow(new StudentNotFoundException("Unable to find student to update with id: " + id));
+
+        // When
+        StudentNotFoundException thrown =
+                assertThrows(StudentNotFoundException.class, () -> underTest.updateStudent(id, newEmail));
+
+        // Then
+        Assertions.assertThat(thrown.getMessage()).isEqualTo("Unable to find student to update with id: " + id);
+    }
+
+    @Test
+    public void StudentService_UpdateStudentWithAlreadyExistingMail_ThrowIllegalStateException() {
         // Given
         Long id = 1L;
         Student student = demoStudent();
-        String existingEmail = student.getEmail();
+        Student anotherStudent = new Student(
+                "Adam",
+                "Smith",
+                "adam@mail.com",
+                "pass1234"
+        );
+        String newEmail = "adam@mail.com";
 
-        when(studentRepository.findById(id)).thenReturn(Optional.of(student));
-        when(studentRepository.findByEmail(existingEmail)).thenReturn(Optional.of(student));
-
+        when(studentRepository.findById(id))
+                .thenReturn(Optional.of(student));
+        when(studentRepository.findByEmail(newEmail))
+                .thenReturn(Optional.of(anotherStudent));
         // When
-        IllegalStateException thrown = assertThrows(IllegalStateException.class, () -> {
-            underTest.updateStudent(id, existingEmail);
-        });
+        IllegalStateException thrown =
+                assertThrows(IllegalStateException.class, () -> underTest.updateStudent(id, newEmail));
 
         // Then
         Assertions.assertThat(thrown.getMessage()).isEqualTo("Email is taken");
-    }*/
+    }
 
 
     @Test
